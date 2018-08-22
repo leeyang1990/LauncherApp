@@ -1,0 +1,14 @@
+{
+  "name": "launcher",
+  "version": "1.0.0",
+  "description": "install package",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "leeyang",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^2.0.7"
+  }
+}
