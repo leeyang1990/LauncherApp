@@ -4,7 +4,7 @@ using System.Text;
 
 public class INI
 {
-    public static string IniFilePath = @"delta\Settings.ini";
+    public static string IniFilePath = @"tools\Settings.ini";
     [DllImport("kernel32")]
     private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
     [DllImport("kernel32")]

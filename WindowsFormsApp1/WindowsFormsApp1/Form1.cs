@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Ionic.Zip;
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
@@ -26,6 +26,10 @@ namespace WindowsFormsApp1
                 label2.Text = line;
             }
 
+            CheckDeltaFile();
+        }
+        void CheckDeltaFile()
+        {
             if (Directory.Exists(INI.ReadIni("Common", "DELTA")))
             {
                 label4.Text = "√";
@@ -36,9 +40,7 @@ namespace WindowsFormsApp1
                 label4.Text = "!";
                 label4.ForeColor = Color.Red;
             }
-            this.Text = "patch";
         }
-
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -48,14 +50,14 @@ namespace WindowsFormsApp1
         {
 
         }
-        string pathpath = Environment.CurrentDirectory + "/delta/patch.exe";
-        void CopyFiles(string filepath) {
-            using (FileStream fsRead = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Read))
+        void CopyFiles(string src,string dst) {
+            using (FileStream fsRead = new FileStream(src, FileMode.OpenOrCreate, FileAccess.Read))
             {
-                using (FileStream fsWrite = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+                using (FileStream fsWrite = new FileStream(dst, FileMode.OpenOrCreate, FileAccess.Write))
                 {
                     //设置进度条最大值
                     //SaveFileProgressBar.Maximum = (int)fsRead.Length;
+                    progressBar1.Maximum = (int)fsRead.Length;
                     //设置缓冲区大小
                     byte[] buffer = new byte[1024 * 1024 * 3];
                     while (true)
@@ -69,9 +71,13 @@ namespace WindowsFormsApp1
                         //写
                         fsWrite.Write(buffer, 0, r);
                         //进度条进度值与写入数据大小关联
-                        
+                        progressBar1.Invoke(new MethodInvoker(delegate
+                        {
+                            progressBar1.Value = (int)fsWrite.Length;
+                            progressBar1.Update();
+                        }));
                     }
-                    MessageBox.Show("保存成功！");
+                    //MessageBox.Show("保存成功！");
                 }
             }
         }
@@ -80,12 +86,37 @@ namespace WindowsFormsApp1
             var dialog = new CommonOpenFileDialog();
             dialog.IsFolderPicker = true;
             CommonFileDialogResult result = dialog.ShowDialog();
-            if(result == CommonFileDialogResult.Ok)
+            if (result == CommonFileDialogResult.Ok)
             {
-                INI.WriteIni("Common", "OLD",dialog.FileName);
+                //INI.WriteIni("Common", "OLD",dialog.FileName);\
+                
+                CopyFiles(Environment.CurrentDirectory +"/tools/patch.exe", dialog.FileName+ "/patch.exe");
+                UnZip(Environment.CurrentDirectory + "/delta.zip", dialog.FileName+"/delta");
             }
         }
+        async void UnZip(string src,string dst) {
+            await Task.Run(() =>
+            {
+                using (var zipFile = ZipFile.Read(src))
+                {
+                    zipFile.ExtractAll(dst, ExtractExistingFileAction.OverwriteSilently);
+                    zipFile.SaveProgress += (o, args) =>
+                    { //Fix this, not showing percentage of extraction.
+                        var percentage = (int)(1.0d / args.TotalBytesToTransfer * args.BytesTransferred * 100.0d);
+                        progressBar1.Invoke(new MethodInvoker(delegate
+                        {
+                            //progressBar1.Maximum = 100;
+                            //progressBar1.Value = (int)((args.BytesTransferred * 100) / args.TotalBytesToTransfer); ;
+                            progressBar1.Maximum = args.EntriesTotal;
+                            progressBar1.Value = args.EntriesSaved + 1;
+                            progressBar1.Update();
+                        }));
+                    };
+                }
+            });
 
+
+        }
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -94,19 +125,32 @@ namespace WindowsFormsApp1
         private void label4_Click(object sender, EventArgs e)
         {
             (new Form2()).ShowDialog();
+            CheckDeltaFile();
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             // Create a process
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            Process process = new System.Diagnostics.Process();
 
             // Set the StartInfo of process
-            process.StartInfo.FileName = Environment.CurrentDirectory + "/delta/patch.exe";
+            process.StartInfo.FileName = Environment.CurrentDirectory + "/tools/patch.exe";
 
             // Start the process
             process.Start();
             process.WaitForExit();
+
+            
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
