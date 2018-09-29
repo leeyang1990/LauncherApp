@@ -157,6 +157,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Form2";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "diff";
             this.Load += new System.EventHandler(this.diff_Load);
             this.ResumeLayout(false);

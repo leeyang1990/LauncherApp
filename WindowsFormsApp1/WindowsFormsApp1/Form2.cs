@@ -71,7 +71,13 @@ namespace WindowsFormsApp1
                 textBox1.Text = dialog.FileName;
                 state1.Text = "√";
                 state1.ForeColor = Color.PaleGreen;
+
+                if (File.Exists(Path.Combine(dialog.FileName, "NativeBridge.log")))
+                {
+                    File.Delete(Path.Combine(dialog.FileName, "NativeBridge.log"));
+                }
             }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -85,7 +91,13 @@ namespace WindowsFormsApp1
                 textBox2.Text = dialog.FileName;
                 state2.Text = "√";
                 state2.ForeColor = Color.PaleGreen;
+
+                if (File.Exists(Path.Combine(dialog.FileName, "NativeBridge.log")))
+                {
+                    File.Delete(Path.Combine(dialog.FileName, "NativeBridge.log"));
+                }
             }
+            
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -97,7 +109,7 @@ namespace WindowsFormsApp1
         {
 
         }
-
+        
         private void button3_Click(object sender, EventArgs e)
         {
 
@@ -106,6 +118,8 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Please select or check your folder.","Message",MessageBoxButtons.OK,MessageBoxIcon.Information);
                 return;
             }
+
+            INI.DeleteFolder(Path.Combine(Environment.CurrentDirectory, INI.ReadIni("Common", "DELTA")));
             // Create a process
             System.Diagnostics.Process process = new System.Diagnostics.Process();
 
@@ -123,39 +137,59 @@ namespace WindowsFormsApp1
 
 
         }
-        async void ZipFile(string src,string dst)
+        void ZipFile(string src,string dst)
         {
-            await Task.Run(() =>
+            Thread thread =  new Thread(() =>
             {
                 using (var zipFile = new ZipFile())
                 {
                     // add content to zip here 
                     zipFile.AddDirectory(src);
                     zipFile.SaveProgress +=
-                        (o, args) =>
+                        (o, e) =>
                         {
                             //if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
                             //{
                             //    progressBar1.Value = args.EntriesSaved * 100 / args.EntriesTotal;
                             //}
-                            if (args.EventType == ZipProgressEventType.Saving_BeforeWriteEntry)
+                            //if (args.EventType == ZipProgressEventType.Saving_BeforeWriteEntry)
+                            //{
+                            //    progressBar1.Invoke(new MethodInvoker(delegate
+                            //    {
+                            //        //progressBar1.Maximum = 100;
+                            //        //progressBar1.Value = (int)((args.BytesTransferred * 100) / args.TotalBytesToTransfer); ;
+                            //        progressBar1.Maximum = args.EntriesTotal;
+                            //        progressBar1.Value = args.EntriesSaved + 1;
+                            //        progressBar1.Update();
+                            //    }));
+                            //}
+
+                            if (e.EventType == ZipProgressEventType.Saving_BeforeWriteEntry)
                             {
-                                progressBar1.Invoke(new MethodInvoker(delegate
-                                {
-                                    //progressBar1.Maximum = 100;
-                                    //progressBar1.Value = (int)((args.BytesTransferred * 100) / args.TotalBytesToTransfer); ;
-                                    progressBar1.Maximum = args.EntriesTotal;
-                                    progressBar1.Value = args.EntriesSaved + 1;
-                                    progressBar1.Update();
+                                progressBar1.Invoke(new MethodInvoker(delegate {
+                                    progressBar1.Maximum = e.EntriesTotal;
+                                    progressBar1.Value = e.EntriesSaved + 1;
                                 }));
+                                
                             }
-                            
+                            else if (e.EventType == ZipProgressEventType.Saving_EntryBytesRead)
+                            {
+                                //progressBar1.Invoke(new MethodInvoker(delegate {
+                                //    progressBar1.Value = (int)((e.BytesTransferred * 100) / e.TotalBytesToTransfer);
+                                //}));
+                            }
+                            else if (e.EventType == ZipProgressEventType.Saving_Completed)
+                            {
+                                MessageBox.Show("Done: " + e.ArchiveName);
+                                INI.DeleteFolder(src);
+
+                            }
 
                         };
                     zipFile.Save(dst);
                 }
             });
-            //this.Close();
+            thread.Start();
         }
         private void label2_Click(object sender, EventArgs e)
         {

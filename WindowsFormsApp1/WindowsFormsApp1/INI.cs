@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -33,5 +34,33 @@ public class INI
     {
         return WritePrivateProfileString(section, key, null, IniFilePath);
     }
-
+    public static void DeleteFolder(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath))
+        {
+            foreach (string d in Directory.GetFileSystemEntries(directoryPath))
+            {
+                if (File.Exists(d))
+                {
+                    FileInfo fi = new FileInfo(d);
+                    if (fi.Attributes.ToString().IndexOf("ReadOnly") != -1)
+                        fi.Attributes = FileAttributes.Normal;
+                    File.Delete(d);     //删除文件   
+                }
+                else
+                    DeleteFolder(d);    //删除文件夹
+            }
+            Directory.Delete(directoryPath);    //删除空文件夹
+        }
+    }
+    public static void DeleteFile(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            FileInfo fi = new FileInfo(filePath);
+            if (fi.Attributes.ToString().IndexOf("ReadOnly") != -1)
+                fi.Attributes = FileAttributes.Normal;
+            File.Delete(filePath);     //删除文件   
+        }
+    }
 }

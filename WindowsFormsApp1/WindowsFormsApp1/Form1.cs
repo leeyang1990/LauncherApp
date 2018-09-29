@@ -18,19 +18,20 @@ namespace WindowsFormsApp1
         public Form1()
         {
             InitializeComponent();
-            using (StreamReader sr = new StreamReader("version.txt",Encoding.UTF8))
+            using (StreamReader sr = new StreamReader("version.txt", Encoding.UTF8))
             {
                 // Read the stream to a string, and write the string to the console.
                 String line = sr.ReadToEnd();
                 Console.WriteLine(line);
                 label2.Text = line;
             }
-
+            label5.Text = "";
             CheckDeltaFile();
         }
         void CheckDeltaFile()
         {
-            if (Directory.Exists(INI.ReadIni("Common", "DELTA")))
+            Console.WriteLine(Path.Combine(Environment.CurrentDirectory, INI.ReadIni("Common", "DELTA") + ".zip"));
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, INI.ReadIni("Common", "DELTA")+ ".zip")))
             {
                 label4.Text = "√";
                 label4.ForeColor = Color.Green;
@@ -91,32 +92,51 @@ namespace WindowsFormsApp1
                 //INI.WriteIni("Common", "OLD",dialog.FileName);\
                 
                 CopyFiles(Environment.CurrentDirectory +"/tools/patch.exe", dialog.FileName+ "/patch.exe");
-                UnZip(Environment.CurrentDirectory + "/delta.zip", dialog.FileName+"/delta");
+                UnZip(Path.Combine(Environment.CurrentDirectory , "delta.zip"),Path.Combine( dialog.FileName,"delta"));
+
+                {
+                    Process process = new Process();
+                    process.StartInfo.FileName = Path.Combine(dialog.FileName, "patch.exe");
+                    process.Start();
+                    process.WaitForExit();
+                    label5.Text = "完成";
+                    INI.DeleteFile(Path.Combine(dialog.FileName, "patch.exe"));
+                    INI.DeleteFolder(Path.Combine(dialog.FileName, "delta"));
+                }
+            }
+                
+        }
+         void UnZip(string src,string dst) {
+            
+            using (var zipFile = ZipFile.Read(src))
+            {
+                if (!Directory.Exists(dst))
+                {
+                    Directory.CreateDirectory(dst);
+                }
+                
+                zipFile.ExtractProgress += (o, e) =>
+                { //Fix this, not showing percentage of extraction.
+                    progressBar1.Invoke(new MethodInvoker(delegate
+                    {
+
+                        if (e.EntriesTotal > e.EntriesExtracted)
+                        {
+                            int percentage = Convert.ToInt32(e.EntriesExtracted / (0.01 * e.EntriesTotal));
+                            string curEntry = e.CurrentEntry.FileName.Split('/').Last();
+                            Console.WriteLine($"Extracting {curEntry} {percentage} %");
+                            progressBar1.Maximum = 100;
+                            progressBar1.Value = percentage;
+                        }else if (e.EventType == ZipProgressEventType.Extracting_AfterExtractAll) {
+                            progressBar1.Value = 100;
+                        }
+                    }));
+                };
+                zipFile.ExtractAll(dst, ExtractExistingFileAction.OverwriteSilently);
+                Console.WriteLine("???:" +"unzip end");
             }
         }
-        async void UnZip(string src,string dst) {
-            await Task.Run(() =>
-            {
-                using (var zipFile = ZipFile.Read(src))
-                {
-                    zipFile.ExtractAll(dst, ExtractExistingFileAction.OverwriteSilently);
-                    zipFile.SaveProgress += (o, args) =>
-                    { //Fix this, not showing percentage of extraction.
-                        var percentage = (int)(1.0d / args.TotalBytesToTransfer * args.BytesTransferred * 100.0d);
-                        progressBar1.Invoke(new MethodInvoker(delegate
-                        {
-                            //progressBar1.Maximum = 100;
-                            //progressBar1.Value = (int)((args.BytesTransferred * 100) / args.TotalBytesToTransfer); ;
-                            progressBar1.Maximum = args.EntriesTotal;
-                            progressBar1.Value = args.EntriesSaved + 1;
-                            progressBar1.Update();
-                        }));
-                    };
-                }
-            });
 
-
-        }
         private void label2_Click(object sender, EventArgs e)
         {
 
@@ -131,15 +151,7 @@ namespace WindowsFormsApp1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Create a process
-            Process process = new System.Diagnostics.Process();
-
-            // Set the StartInfo of process
-            process.StartInfo.FileName = Environment.CurrentDirectory + "/tools/patch.exe";
-
-            // Start the process
-            process.Start();
-            process.WaitForExit();
+           
 
             
         }
@@ -149,6 +161,11 @@ namespace WindowsFormsApp1
         }
 
         private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
         {
 
         }
