@@ -23,6 +23,8 @@ namespace WindowsFormsApp1
                 // Read the stream to a string, and write the string to the console.
                 String line = sr.ReadToEnd();
                 Console.WriteLine(line);
+
+
                 label2.Text = line;
             }
             label5.Text = "";
@@ -42,15 +44,7 @@ namespace WindowsFormsApp1
                 label4.ForeColor = Color.Red;
             }
         }
-        private void label1_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void label1_Click_1(object sender, EventArgs e)
-        {
-
-        }
         void CopyFiles(string src,string dst) {
             using (FileStream fsRead = new FileStream(src, FileMode.OpenOrCreate, FileAccess.Read))
             {
@@ -137,10 +131,6 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void label4_Click(object sender, EventArgs e)
         {
@@ -148,26 +138,30 @@ namespace WindowsFormsApp1
             CheckDeltaFile();
 
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-           
-
-            
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-
         private void progressBar1_Click(object sender, EventArgs e)
         {
+            
 
         }
-
         private void label5_Click(object sender, EventArgs e)
         {
 
+
         }
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+
+        }
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
     }
 }

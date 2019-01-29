@@ -45,10 +45,6 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void diff_Load(object sender, EventArgs e)
-        {
-            
-        }
         bool CheckDiffButton()
         {
             if(state1.Text == "√"&& state2.Text == "√")
@@ -60,6 +56,15 @@ namespace WindowsFormsApp1
                 return false;
             }
         }
+        public List<string> excludeFiles = new List<string>()
+        {
+            "NativeBridge.log",
+            "patch.log",
+        };
+        public List<string> excludeDics = new List<string>()
+        {
+            "cache",
+        };
         private void button1_Click(object sender, EventArgs e)
         {
             var dialog = new CommonOpenFileDialog();
@@ -72,10 +77,15 @@ namespace WindowsFormsApp1
                 state1.Text = "√";
                 state1.ForeColor = Color.PaleGreen;
 
-                if (File.Exists(Path.Combine(dialog.FileName, "NativeBridge.log")))
-                {
-                    File.Delete(Path.Combine(dialog.FileName, "NativeBridge.log"));
-                }
+                //foreach (var item in excludeFiles)
+                //{
+                //    INI.DeleteFile(Path.Combine(dialog.FileName, item));
+                //}
+                //foreach (var item in excludeDics)
+                //{
+                //    INI.DeleteFolder(Path.Combine(dialog.FileName, item));
+                //}
+                
             }
             
         }
@@ -92,24 +102,19 @@ namespace WindowsFormsApp1
                 state2.Text = "√";
                 state2.ForeColor = Color.PaleGreen;
 
-                if (File.Exists(Path.Combine(dialog.FileName, "NativeBridge.log")))
-                {
-                    File.Delete(Path.Combine(dialog.FileName, "NativeBridge.log"));
-                }
+                //foreach (var item in excludeFiles)
+                //{
+                //    INI.DeleteFile(Path.Combine(dialog.FileName, item));
+                //}
+
+                //foreach (var item in excludeDics)
+                //{
+                //    INI.DeleteFolder(Path.Combine(dialog.FileName, item));
+                //}
             }
             
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-        
         private void button3_Click(object sender, EventArgs e)
         {
 
@@ -118,6 +123,22 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Please select or check your folder.","Message",MessageBoxButtons.OK,MessageBoxIcon.Information);
                 return;
             }
+
+            //Delete exclude 
+            List<string> rootpaths = new List<string>() { textBox1.Text, textBox2.Text };
+            foreach (var item in rootpaths)
+            {
+                foreach (var ee in excludeFiles)
+                {
+                    INI.DeleteFile(Path.Combine(item, ee));
+                }
+
+                foreach (var ee in excludeDics)
+                {
+                    INI.DeleteFolder(Path.Combine(item, ee));
+                }
+            }
+
 
             INI.DeleteFolder(Path.Combine(Environment.CurrentDirectory, INI.ReadIni("Common", "DELTA")));
             // Create a process
@@ -194,35 +215,41 @@ namespace WindowsFormsApp1
         private void label2_Click(object sender, EventArgs e)
         {
 
-        }
 
+        }
         private void label4_Click(object sender, EventArgs e)
         {
 
-        }
 
-        private void label2_Click_1(object sender, EventArgs e)
+        }
+        private void progressBar1_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void label1_Click_1(object sender, EventArgs e)
-        {
 
         }
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
-        }
 
+        }
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
-        }
 
-        private void progressBar1_Click(object sender, EventArgs e)
+        }
+        private void label1_Click_1(object sender, EventArgs e)
         {
+
+
+        }
+        private void label2_Click_1(object sender, EventArgs e)
+        {
+
+
+        }
+        private void diff_Load(object sender, EventArgs e)
+        {
+
 
         }
     }
