@@ -2,17 +2,12 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using Ionic.Zip;
 
-namespace WindowsFormsApp1
+namespace updatetool
 {
     public partial class Form2 : Form
     {
@@ -76,15 +71,6 @@ namespace WindowsFormsApp1
                 textBox1.Text = dialog.FileName;
                 state1.Text = "√";
                 state1.ForeColor = Color.PaleGreen;
-
-                //foreach (var item in excludeFiles)
-                //{
-                //    INI.DeleteFile(Path.Combine(dialog.FileName, item));
-                //}
-                //foreach (var item in excludeDics)
-                //{
-                //    INI.DeleteFolder(Path.Combine(dialog.FileName, item));
-                //}
                 
             }
             
@@ -101,16 +87,6 @@ namespace WindowsFormsApp1
                 textBox2.Text = dialog.FileName;
                 state2.Text = "√";
                 state2.ForeColor = Color.PaleGreen;
-
-                //foreach (var item in excludeFiles)
-                //{
-                //    INI.DeleteFile(Path.Combine(dialog.FileName, item));
-                //}
-
-                //foreach (var item in excludeDics)
-                //{
-                //    INI.DeleteFolder(Path.Combine(dialog.FileName, item));
-                //}
             }
             
         }
@@ -169,21 +145,6 @@ namespace WindowsFormsApp1
                     zipFile.SaveProgress +=
                         (o, e) =>
                         {
-                            //if (args.EventType == ZipProgressEventType.Saving_AfterWriteEntry)
-                            //{
-                            //    progressBar1.Value = args.EntriesSaved * 100 / args.EntriesTotal;
-                            //}
-                            //if (args.EventType == ZipProgressEventType.Saving_BeforeWriteEntry)
-                            //{
-                            //    progressBar1.Invoke(new MethodInvoker(delegate
-                            //    {
-                            //        //progressBar1.Maximum = 100;
-                            //        //progressBar1.Value = (int)((args.BytesTransferred * 100) / args.TotalBytesToTransfer); ;
-                            //        progressBar1.Maximum = args.EntriesTotal;
-                            //        progressBar1.Value = args.EntriesSaved + 1;
-                            //        progressBar1.Update();
-                            //    }));
-                            //}
 
                             if (e.EventType == ZipProgressEventType.Saving_BeforeWriteEntry)
                             {

@@ -21,8 +21,9 @@ ExportedObj/
 *.svd
 *.pdb
 *.vs
-WindowsFormsApp1/bin/
-WindowsFormsApp1/obj/
+updatetool/bin/
+updatetool/obj/
+packages/
 # Others
 .DS_Store
 launcher/node_modules/

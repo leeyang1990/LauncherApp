@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "WindowsFormsApp1\WindowsFormsApp1.csproj", "{A0E2F8E0-5EA3-4874-A564-50541C8D4F15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "updatetool", "updatetool\updatetool.csproj", "{A0E2F8E0-5EA3-4874-A564-50541C8D4F15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
